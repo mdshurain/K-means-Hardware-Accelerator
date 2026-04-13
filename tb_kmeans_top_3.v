@@ -1,0 +1,42 @@
+`timescale 1ns / 1ps
+
+module tb_kmeansgpu ;
+    reg  [7:0] x;
+    reg  [7:0] y;
+    reg  [7:0] c0x, c0y, c1x, c1y, c2x, c2y;
+
+    wire [16:0] min_dist;
+    wire [1:0]  cluster_id;
+    wire [16:0] dist0, dist1, dist2;
+
+    kmeansgpu  dut (
+        .x(x), .y(y),
+        .c0x(c0x), .c0y(c0y),
+        .c1x(c1x), .c1y(c1y),
+        .c2x(c2x), .c2y(c2y),
+        .min_dist(min_dist),
+        .cluster_id(cluster_id),
+        .dist0(dist0), .dist1(dist1), .dist2(dist2)
+    );
+
+    initial begin
+        $display("time\tx\ty\td0\td1\td2\tcluster");
+        c0x = 8'd10; c0y = 8'd10;
+        c1x = 8'd40; c1y = 8'd10;
+        c2x = 8'd20; c2y = 8'd35;
+
+        x = 8'd12; y = 8'd13;
+        #10;
+        $display("%0t\t%0d\t%0d\t%0d\t%0d\t%0d\t%0d", $time, x, y, dist0, dist1, dist2, cluster_id);
+
+        x = 8'd38; y = 8'd12;
+        #10;
+        $display("%0t\t%0d\t%0d\t%0d\t%0d\t%0d\t%0d", $time, x, y, dist0, dist1, dist2, cluster_id);
+
+        x = 8'd22; y = 8'd31;
+        #10;
+        $display("%0t\t%0d\t%0d\t%0d\t%0d\t%0d\t%0d", $time, x, y, dist0, dist1, dist2, cluster_id);
+
+        $finish;
+    end
+endmodule

@@ -1,0 +1,42 @@
+`timescale 1ns / 1ps
+
+module centroid_update #(
+    parameter WIDTH = 8,
+    parameter SUMW  = 24
+)(
+    input  wire              clk,
+    input  wire              rst,
+    input  wire              clear,
+    input  wire              point_valid,
+    input  wire [WIDTH-1:0]  px,
+    input  wire [WIDTH-1:0]  py,
+    output reg  [SUMW-1:0]   sum_x,
+    output reg  [SUMW-1:0]   sum_y,
+    output reg  [SUMW-1:0]   count,
+    output reg  [WIDTH-1:0]  centroid_x,
+    output reg  [WIDTH-1:0]  centroid_y
+);
+    always @(posedge clk or posedge rst) begin
+        if (rst) begin
+            sum_x <= 0;
+            sum_y <= 0;
+            count <= 0;
+            centroid_x <= 0;
+            centroid_y <= 0;
+        end else if (clear) begin
+            sum_x <= 0;
+            sum_y <= 0;
+            count <= 0;
+            centroid_x <= 0;
+            centroid_y <= 0;
+        end else if (point_valid) begin
+            sum_x <= sum_x + px;
+            sum_y <= sum_y + py;
+            count <= count + 1;
+            if ((count + 1) != 0) begin
+                centroid_x <= (sum_x + px) / (count + 1);
+                centroid_y <= (sum_y + py) / (count + 1);
+            end
+        end
+    end
+endmodule
